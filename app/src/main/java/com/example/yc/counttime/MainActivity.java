@@ -1,6 +1,7 @@
 package com.example.yc.counttime;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -48,7 +52,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        handler3.sendMessageDelayed(message3, 1000);
 
         //第四种  Handler与Thread（不占用UI线程）
-        new Thread(new MyThread()).start();         // start thread
+//        new Thread(new MyThread()).start();         // start thread
+
+        //Handler与Runnable（最简单型）
+//        handler5.postDelayed(runnable, 1000);
+
+        //CountDownTimer
+        timer2.start();
+
     }
     ////start////// 第一种//////////
 
@@ -150,7 +161,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     ////end//////// 第四种//////////
+    ////start////// 第五种//////////
+    Handler handler5 = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            recLen++;
+            count_tv.setText("" + recLen);
+            handler5.postDelayed(this, 1000);
+        }
+    };
+    ////end//////// 第五种//////////
 
+
+    private CountDownTimer timer2 = new CountDownTimer(1000 * 60 * 10, 1000) {
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+            count_tv.setText((millisUntilFinished / 1000) + "    "+ format(millisUntilFinished));
+        }
+
+        @Override
+        public void onFinish() {
+            count_tv.setEnabled(true);
+            count_tv.setText("获取验证码");
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -165,5 +202,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    public static String format(long time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+        String s = sdf.format(new Date(time));
+        return s;
     }
 }
